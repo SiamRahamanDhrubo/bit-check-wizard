@@ -18,18 +18,26 @@ const DownloadPage = () => {
 
   const handleDownload = () => {
     setIsDownloading(true);
-    // Simulate download process
+    
+    // Create download link for the file in root directory
+    const fileName = getFileName();
+    const link = document.createElement('a');
+    link.href = `/${fileName}`;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    // Reset downloading state
     setTimeout(() => {
       setIsDownloading(false);
-      // In a real app, this would trigger the actual file download
-      console.log(`Downloading file for ${architecture} architecture`);
-    }, 2000);
+    }, 1000);
   };
 
   const getFileName = () => {
     return architecture === '32-bit' 
-      ? 'software-installer-x86.exe' 
-      : 'software-installer-x64.exe';
+      ? 'Client-Editor32-bit Minecraft.zip' 
+      : 'Client-Editor64-bit Minecraft.zip';
   };
 
   return (
@@ -47,7 +55,7 @@ const DownloadPage = () => {
               Based on your selection: <span className="font-semibold text-green-700">{architecture}</span>
             </p>
             <p className="text-gray-600">
-              Download the appropriate installer for your system
+              Download the Minecraft client editor for your system
             </p>
           </div>
 
@@ -89,7 +97,7 @@ const DownloadPage = () => {
 
           <div className="mt-8 pt-6 border-t border-gray-200">
             <p className="text-sm text-gray-500">
-              Make sure to run the installer as administrator for proper installation
+              Make sure the file exists in your project's root directory
             </p>
           </div>
         </div>
