@@ -1,12 +1,18 @@
 
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Monitor, CheckCircle } from 'lucide-react';
 
 const Index = () => {
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   const handleAnswerSelect = (answer: string) => {
     setSelectedAnswer(answer);
+    // Navigate to download page after a short delay to show the selection
+    setTimeout(() => {
+      navigate(`/download?arch=${encodeURIComponent(answer)}`);
+    }, 1500);
   };
 
   const resetAnswer = () => {
@@ -55,6 +61,9 @@ const Index = () => {
                 </h2>
                 <p className="text-lg text-gray-700">
                   You selected: <span className="font-semibold text-green-700">{selectedAnswer}</span>
+                </p>
+                <p className="text-sm text-gray-600 mt-2">
+                  Redirecting to download page...
                 </p>
               </div>
               <button
