@@ -19,7 +19,7 @@ const DownloadPage = () => {
   const handleDownload = () => {
     setIsDownloading(true);
     
-    // Create download link for the file in root directory
+    // Create download link for the file in public directory
     const fileName = getFileName();
     const link = document.createElement('a');
     link.href = `/${fileName}`;
@@ -97,7 +97,7 @@ const DownloadPage = () => {
 
           <div className="mt-8 pt-6 border-t border-gray-200">
             <p className="text-sm text-gray-500">
-              Make sure the file exists in your project's root directory
+              Place your files in the public folder of your project
             </p>
           </div>
         </div>
