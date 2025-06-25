@@ -1,21 +1,17 @@
 
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Monitor, CheckCircle } from 'lucide-react';
+import { useNavigate, Link } from 'react-router-dom';
+import { Monitor, CheckCircle, ArrowLeft } from 'lucide-react';
 
-const Index = () => {
+const Architecture = () => {
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const navigate = useNavigate();
 
   const handleAnswerSelect = (answer: string) => {
     setSelectedAnswer(answer);
-    // Navigate to appropriate page after a short delay to show the selection
+    // Navigate to download page after a short delay to show the selection
     setTimeout(() => {
-      if (answer === 'Windows') {
-        navigate('/architecture');
-      } else if (answer === 'Android') {
-        navigate(`/download?os=android`);
-      }
+      navigate(`/download?os=windows&arch=${encodeURIComponent(answer)}`);
     }, 1500);
   };
 
@@ -32,26 +28,26 @@ const Index = () => {
               <Monitor className="w-8 h-8 text-blue-600" />
             </div>
             <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Operating System Check
+              System Architecture Check
             </h1>
             <p className="text-lg text-gray-600 leading-relaxed">
-              What operating system are you using?
+              Is your Windows operating system 32-bit (x86) or 64-bit (x64)?
             </p>
           </div>
 
           {!selectedAnswer ? (
             <div className="space-y-4">
               <button
-                onClick={() => handleAnswerSelect('Android')}
-                className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-4 px-8 rounded-xl transition-all duration-200 transform hover:scale-105 hover:shadow-lg"
-              >
-                <span className="text-lg">1. Android</span>
-              </button>
-              <button
-                onClick={() => handleAnswerSelect('Windows')}
+                onClick={() => handleAnswerSelect('32-bit')}
                 className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-8 rounded-xl transition-all duration-200 transform hover:scale-105 hover:shadow-lg"
               >
-                <span className="text-lg">2. Windows</span>
+                <span className="text-lg">1. 32-bit (x86)</span>
+              </button>
+              <button
+                onClick={() => handleAnswerSelect('64-bit')}
+                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-4 px-8 rounded-xl transition-all duration-200 transform hover:scale-105 hover:shadow-lg"
+              >
+                <span className="text-lg">2. 64-bit (x64)</span>
               </button>
             </div>
           ) : (
@@ -67,7 +63,7 @@ const Index = () => {
                   You selected: <span className="font-semibold text-green-700">{selectedAnswer}</span>
                 </p>
                 <p className="text-sm text-gray-600 mt-2">
-                  {selectedAnswer === 'Windows' ? 'Redirecting to architecture check...' : 'Redirecting to download page...'}
+                  Redirecting to download page...
                 </p>
               </div>
               <button
@@ -79,9 +75,19 @@ const Index = () => {
             </div>
           )}
 
+          <div className="mt-6">
+            <Link
+              to="/"
+              className="inline-flex items-center text-gray-600 hover:text-gray-800 transition-colors duration-200"
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back to OS Selection
+            </Link>
+          </div>
+
           <div className="mt-8 pt-6 border-t border-gray-200">
             <p className="text-sm text-gray-500">
-              Choose your operating system to get the correct version
+              Not sure? Check your system by going to Settings → System → About in Windows 10/11
             </p>
           </div>
         </div>
@@ -90,4 +96,4 @@ const Index = () => {
   );
 };
 
-export default Index;
+export default Architecture;

@@ -5,28 +5,27 @@ import { Download, ArrowLeft, CheckCircle } from 'lucide-react';
 
 const DownloadPage = () => {
   const location = useLocation();
+  const [os, setOs] = useState<string>('');
   const [architecture, setArchitecture] = useState<string>('');
   const [isDownloading, setIsDownloading] = useState(false);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
-    const arch = params.get('arch');
-    if (arch) {
-      setArchitecture(arch);
+    const osParam = params.get('os');
+    const archParam = params.get('arch');
+    if (osParam) {
+      setOs(osParam);
+    }
+    if (archParam) {
+      setArchitecture(archParam);
     }
   }, [location]);
 
   const handleDownload = () => {
     setIsDownloading(true);
     
-    // Create download link for the file in public directory
-    const fileName = getFileName();
-    const link = document.createElement('a');
-    link.href = `/${fileName}`;
-    link.download = fileName;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    const downloadUrl = getDownloadUrl();
+    window.open(downloadUrl, '_blank');
     
     // Reset downloading state
     setTimeout(() => {
@@ -34,10 +33,32 @@ const DownloadPage = () => {
     }, 1000);
   };
 
-  const getFileName = () => {
-    return architecture === '32-bit' 
-      ? 'Client-Editor32-bit Minecraft.zip' 
-      : 'Client-Editor64-bit Minecraft.zip';
+  const getDownloadUrl = () => {
+    if (os === 'android') {
+      return 'https://mega.nz/file/iR1D3ToI#3vgM_Q2Tbjj3tOZ-bwxthF3tAlQRY5xGY1xW3VNTvPg';
+    } else if (os === 'windows') {
+      return architecture === '32-bit' 
+        ? 'https://mega.nz/file/XYdkhKQD#5FExUMIAoweOuSJvkngtEC3zYn5zdlDhZfjzuQ0ErP8'
+        : 'https://mega.nz/file/iV1zwSZJ#_Oo5mZiiOpB-vuzaR9pvIIbyp4ycWufA6OQwYTGfUyU';
+    }
+    return '';
+  };
+
+  const getDisplayText = () => {
+    if (os === 'android') {
+      return 'Android';
+    } else if (os === 'windows') {
+      return `Windows ${architecture}`;
+    }
+    return '';
+  };
+
+  const getBackLink = () => {
+    return os === 'windows' ? '/architecture' : '/';
+  };
+
+  const getBackText = () => {
+    return os === 'windows' ? 'Back to Architecture Check' : 'Back to OS Selection';
   };
 
   return (
@@ -52,7 +73,7 @@ const DownloadPage = () => {
               Download Ready
             </h1>
             <p className="text-lg text-gray-600 leading-relaxed mb-2">
-              Based on your selection: <span className="font-semibold text-green-700">{architecture}</span>
+              Based on your selection: <span className="font-semibold text-green-700">{getDisplayText()}</span>
             </p>
             <p className="text-gray-600">
               Download the Minecraft client editor for your system
@@ -62,7 +83,7 @@ const DownloadPage = () => {
           <div className="bg-blue-50 border border-blue-200 rounded-xl p-6 mb-8">
             <div className="flex items-center justify-center mb-4">
               <CheckCircle className="w-6 h-6 text-blue-600 mr-2" />
-              <span className="font-medium text-blue-800">File: {getFileName()}</span>
+              <span className="font-medium text-blue-800">Ready to download for {getDisplayText()}</span>
             </div>
             <button
               onClick={handleDownload}
@@ -76,28 +97,28 @@ const DownloadPage = () => {
               {isDownloading ? (
                 <span className="flex items-center justify-center">
                   <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                  Downloading...
+                  Opening Download...
                 </span>
               ) : (
                 <span className="flex items-center justify-center">
                   <Download className="w-5 h-5 mr-2" />
-                  Download File
+                  Download from Mega.nz
                 </span>
               )}
             </button>
           </div>
 
           <Link
-            to="/"
+            to={getBackLink()}
             className="inline-flex items-center text-gray-600 hover:text-gray-800 transition-colors duration-200"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to System Check
+            {getBackText()}
           </Link>
 
           <div className="mt-8 pt-6 border-t border-gray-200">
             <p className="text-sm text-gray-500">
-              Place your files in the public folder of your project
+              Download will open in a new tab via Mega.nz
             </p>
           </div>
         </div>
