@@ -3,15 +3,19 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Monitor, CheckCircle, ArrowLeft } from 'lucide-react';
 
-const Architecture = () => {
+const OSSelection = () => {
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const navigate = useNavigate();
 
   const handleAnswerSelect = (answer: string) => {
     setSelectedAnswer(answer);
-    // Navigate to download page after a short delay to show the selection
+    // Navigate to appropriate page after a short delay to show the selection
     setTimeout(() => {
-      navigate(`/download?os=windows&arch=${encodeURIComponent(answer)}`);
+      if (answer === 'Windows') {
+        navigate('/architecture');
+      } else if (answer === 'Android') {
+        navigate(`/download?os=android`);
+      }
     }, 1500);
   };
 
@@ -28,26 +32,26 @@ const Architecture = () => {
               <Monitor className="w-8 h-8 text-blue-600" />
             </div>
             <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              System Architecture Check
+              Minecraft - Operating System Check
             </h1>
             <p className="text-lg text-gray-600 leading-relaxed">
-              Is your Windows operating system 32-bit (x86) or 64-bit (x64)?
+              What operating system are you using?
             </p>
           </div>
 
           {!selectedAnswer ? (
             <div className="space-y-4">
               <button
-                onClick={() => handleAnswerSelect('32-bit')}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-8 rounded-xl transition-all duration-200 transform hover:scale-105 hover:shadow-lg"
+                onClick={() => handleAnswerSelect('Android')}
+                className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-4 px-8 rounded-xl transition-all duration-200 transform hover:scale-105 hover:shadow-lg"
               >
-                <span className="text-lg">1. 32-bit (x86)</span>
+                <span className="text-lg">1. Android</span>
               </button>
               <button
-                onClick={() => handleAnswerSelect('64-bit')}
-                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-4 px-8 rounded-xl transition-all duration-200 transform hover:scale-105 hover:shadow-lg"
+                onClick={() => handleAnswerSelect('Windows')}
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-8 rounded-xl transition-all duration-200 transform hover:scale-105 hover:shadow-lg"
               >
-                <span className="text-lg">2. 64-bit (x64)</span>
+                <span className="text-lg">2. Windows</span>
               </button>
             </div>
           ) : (
@@ -63,7 +67,7 @@ const Architecture = () => {
                   You selected: <span className="font-semibold text-green-700">{selectedAnswer}</span>
                 </p>
                 <p className="text-sm text-gray-600 mt-2">
-                  Redirecting to download page...
+                  {selectedAnswer === 'Windows' ? 'Redirecting to architecture check...' : 'Redirecting to download page...'}
                 </p>
               </div>
               <button
@@ -77,17 +81,17 @@ const Architecture = () => {
 
           <div className="mt-6">
             <Link
-              to="/os-selection"
+              to="/"
               className="inline-flex items-center text-gray-600 hover:text-gray-800 transition-colors duration-200"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to OS Selection
+              Back to Game Selection
             </Link>
           </div>
 
           <div className="mt-8 pt-6 border-t border-gray-200">
             <p className="text-sm text-gray-500">
-              Not sure? Check your system by going to Settings → System → About in Windows 10/11
+              Choose your operating system to get the correct version
             </p>
           </div>
         </div>
@@ -96,4 +100,4 @@ const Architecture = () => {
   );
 };
 
-export default Architecture;
+export default OSSelection;

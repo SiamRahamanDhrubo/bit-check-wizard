@@ -35,7 +35,7 @@ const DownloadPage = () => {
 
   const getDownloadUrl = () => {
     if (os === 'android') {
-      return 'https://mega.nz/file/iR1D3ToI#3vgM_Q2Tbjj3tOZ-bwxthF3tAlQRY5xGY1xW3VNTvPg';
+      return 'https://mega.nz/file/DIsT2RpC#m_Ufw0LR0sdAjNI1mItSsRN0ojGNX4sTBhYF_oLPcEQ';
     } else if (os === 'windows') {
       return architecture === '32-bit' 
         ? 'https://mega.nz/file/XYdkhKQD#5FExUMIAoweOuSJvkngtEC3zYn5zdlDhZfjzuQ0ErP8'
@@ -54,7 +54,7 @@ const DownloadPage = () => {
   };
 
   const getBackLink = () => {
-    return os === 'windows' ? '/architecture' : '/';
+    return os === 'windows' ? '/architecture' : '/os-selection';
   };
 
   const getBackText = () => {

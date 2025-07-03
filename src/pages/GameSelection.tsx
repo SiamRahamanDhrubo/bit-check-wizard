@@ -1,17 +1,21 @@
 
 import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { Monitor, CheckCircle, ArrowLeft } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Gamepad2, CheckCircle } from 'lucide-react';
 
-const Architecture = () => {
+const GameSelection = () => {
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const navigate = useNavigate();
 
   const handleAnswerSelect = (answer: string) => {
     setSelectedAnswer(answer);
-    // Navigate to download page after a short delay to show the selection
+    // Navigate to appropriate page after a short delay to show the selection
     setTimeout(() => {
-      navigate(`/download?os=windows&arch=${encodeURIComponent(answer)}`);
+      if (answer === 'Minecraft') {
+        navigate('/os-selection');
+      } else if (answer === 'Geometry Dash') {
+        navigate('/geometry-dash-os');
+      }
     }, 1500);
   };
 
@@ -20,34 +24,34 @@ const Architecture = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-indigo-100 flex items-center justify-center p-4">
       <div className="max-w-2xl w-full">
         <div className="bg-white rounded-2xl shadow-xl p-8 md:p-12 text-center">
           <div className="mb-8">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-6">
-              <Monitor className="w-8 h-8 text-blue-600" />
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-purple-100 rounded-full mb-6">
+              <Gamepad2 className="w-8 h-8 text-purple-600" />
             </div>
             <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              System Architecture Check
+              Game Selection
             </h1>
             <p className="text-lg text-gray-600 leading-relaxed">
-              Is your Windows operating system 32-bit (x86) or 64-bit (x64)?
+              What game would you like to download?
             </p>
           </div>
 
           {!selectedAnswer ? (
             <div className="space-y-4">
               <button
-                onClick={() => handleAnswerSelect('32-bit')}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-8 rounded-xl transition-all duration-200 transform hover:scale-105 hover:shadow-lg"
+                onClick={() => handleAnswerSelect('Minecraft')}
+                className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-4 px-8 rounded-xl transition-all duration-200 transform hover:scale-105 hover:shadow-lg"
               >
-                <span className="text-lg">1. 32-bit (x86)</span>
+                <span className="text-lg">1. Minecraft</span>
               </button>
               <button
-                onClick={() => handleAnswerSelect('64-bit')}
-                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-4 px-8 rounded-xl transition-all duration-200 transform hover:scale-105 hover:shadow-lg"
+                onClick={() => handleAnswerSelect('Geometry Dash')}
+                className="w-full bg-orange-600 hover:bg-orange-700 text-white font-semibold py-4 px-8 rounded-xl transition-all duration-200 transform hover:scale-105 hover:shadow-lg"
               >
-                <span className="text-lg">2. 64-bit (x64)</span>
+                <span className="text-lg">2. Geometry Dash</span>
               </button>
             </div>
           ) : (
@@ -63,7 +67,7 @@ const Architecture = () => {
                   You selected: <span className="font-semibold text-green-700">{selectedAnswer}</span>
                 </p>
                 <p className="text-sm text-gray-600 mt-2">
-                  Redirecting to download page...
+                  {selectedAnswer === 'Minecraft' ? 'Redirecting to OS selection...' : 'Redirecting to Geometry Dash OS selection...'}
                 </p>
               </div>
               <button
@@ -75,19 +79,9 @@ const Architecture = () => {
             </div>
           )}
 
-          <div className="mt-6">
-            <Link
-              to="/os-selection"
-              className="inline-flex items-center text-gray-600 hover:text-gray-800 transition-colors duration-200"
-            >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to OS Selection
-            </Link>
-          </div>
-
           <div className="mt-8 pt-6 border-t border-gray-200">
             <p className="text-sm text-gray-500">
-              Not sure? Check your system by going to Settings → System → About in Windows 10/11
+              Choose your game to get started
             </p>
           </div>
         </div>
@@ -96,4 +90,4 @@ const Architecture = () => {
   );
 };
 
-export default Architecture;
+export default GameSelection;
