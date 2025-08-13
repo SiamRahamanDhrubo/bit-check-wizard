@@ -35,7 +35,7 @@ const DownloadPage = () => {
 
   const getDownloadUrl = () => {
     if (os === 'android') {
-      return 'https://mega.nz/file/rU9mBZgL#mBYLcXLLT9JtcAQWPsRrCqNuPlfVQb8B1HYoZ0E7ilM';
+      return 'https://mega.nz/file/XcdkzRRQ#9LZe6jbvVBg5-PdbKNf63SEM9oaub3F2XcSyuIBUsuM';
     } else if (os === 'windows') {
       return architecture === '32-bit' 
         ? 'https://mega.nz/file/XYdkhKQD#5FExUMIAoweOuSJvkngtEC3zYn5zdlDhZfjzuQ0ErP8'
