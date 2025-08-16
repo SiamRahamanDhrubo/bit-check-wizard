@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import GameSelection from "./pages/GameSelection";
 import OSSelection from "./pages/OSSelection";
 import GeometryDashOS from "./pages/GeometryDashOS";
+import UpGraderlyDownload from "./pages/UpGraderlyDownload";
 import Architecture from "./pages/Architecture";
 import Download from "./pages/Download";
 import NotFound from "./pages/NotFound";
@@ -23,6 +24,7 @@ const App = () => (
           <Route path="/" element={<GameSelection />} />
           <Route path="/os-selection" element={<OSSelection />} />
           <Route path="/geometry-dash-os" element={<GeometryDashOS />} />
+          <Route path="/upgraderly-download" element={<UpGraderlyDownload />} />
           <Route path="/architecture" element={<Architecture />} />
           <Route path="/download" element={<Download />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

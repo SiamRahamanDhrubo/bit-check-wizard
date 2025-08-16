@@ -15,6 +15,8 @@ const GameSelection = () => {
         navigate('/os-selection');
       } else if (answer === 'Geometry Dash') {
         navigate('/geometry-dash-os');
+      } else if (answer === 'UpGraderly') {
+        navigate('/upgraderly-download');
       }
     }, 1500);
   };
@@ -53,6 +55,12 @@ const GameSelection = () => {
               >
                 <span className="text-lg">2. Geometry Dash</span>
               </button>
+              <button
+                onClick={() => handleAnswerSelect('UpGraderly')}
+                className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-4 px-8 rounded-xl transition-all duration-200 transform hover:scale-105 hover:shadow-lg"
+              >
+                <span className="text-lg">3. UpGraderly (Android only)</span>
+              </button>
             </div>
           ) : (
             <div className="space-y-6">
@@ -67,7 +75,11 @@ const GameSelection = () => {
                   You selected: <span className="font-semibold text-green-700">{selectedAnswer}</span>
                 </p>
                 <p className="text-sm text-gray-600 mt-2">
-                  {selectedAnswer === 'Minecraft' ? 'Redirecting to OS selection...' : 'Redirecting to Geometry Dash OS selection...'}
+                  {selectedAnswer === 'Minecraft' 
+                    ? 'Redirecting to OS selection...' 
+                    : selectedAnswer === 'Geometry Dash' 
+                    ? 'Redirecting to Geometry Dash OS selection...'
+                    : 'Redirecting to UpGraderly download...'}
                 </p>
               </div>
               <button
