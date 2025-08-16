@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import GameSelection from "./pages/GameSelection";
 import OSSelection from "./pages/OSSelection";
+import AndroidMusicSelection from "./pages/AndroidMusicSelection";
 import GeometryDashOS from "./pages/GeometryDashOS";
 import UpGraderlyDownload from "./pages/UpGraderlyDownload";
 import Architecture from "./pages/Architecture";
@@ -23,6 +24,7 @@ const App = () => (
         <Routes>
           <Route path="/" element={<GameSelection />} />
           <Route path="/os-selection" element={<OSSelection />} />
+          <Route path="/android-music" element={<AndroidMusicSelection />} />
           <Route path="/geometry-dash-os" element={<GeometryDashOS />} />
           <Route path="/upgraderly-download" element={<UpGraderlyDownload />} />
           <Route path="/architecture" element={<Architecture />} />

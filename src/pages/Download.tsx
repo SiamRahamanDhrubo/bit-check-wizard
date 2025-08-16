@@ -7,17 +7,22 @@ const DownloadPage = () => {
   const location = useLocation();
   const [os, setOs] = useState<string>('');
   const [architecture, setArchitecture] = useState<string>('');
+  const [music, setMusic] = useState<string>('');
   const [isDownloading, setIsDownloading] = useState(false);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const osParam = params.get('os');
     const archParam = params.get('arch');
+    const musicParam = params.get('music');
     if (osParam) {
       setOs(osParam);
     }
     if (archParam) {
       setArchitecture(archParam);
+    }
+    if (musicParam) {
+      setMusic(musicParam);
     }
   }, [location]);
 
@@ -35,7 +40,12 @@ const DownloadPage = () => {
 
   const getDownloadUrl = () => {
     if (os === 'android') {
-      return 'https://mega.nz/file/XcdkzRRQ#9LZe6jbvVBg5-PdbKNf63SEM9oaub3F2XcSyuIBUsuM';
+      if (music === 'without') {
+        return 'https://mega.nz/file/XcdkzRRQ#9LZe6jbvVBg5-PdbKNf63SEM9oaub3F2XcSyuIBUsuM';
+      } else if (music === 'with') {
+        // TODO: Add the "with music" download link here
+        return '#'; // Placeholder for now
+      }
     } else if (os === 'windows') {
       return architecture === '32-bit' 
         ? 'https://mega.nz/file/XYdkhKQD#5FExUMIAoweOuSJvkngtEC3zYn5zdlDhZfjzuQ0ErP8'
@@ -46,7 +56,7 @@ const DownloadPage = () => {
 
   const getDisplayText = () => {
     if (os === 'android') {
-      return 'Android';
+      return `Android ${music === 'with' ? '(With Music)' : '(Without Music)'}`;
     } else if (os === 'windows') {
       return `Windows ${architecture}`;
     }
@@ -54,11 +64,21 @@ const DownloadPage = () => {
   };
 
   const getBackLink = () => {
-    return os === 'windows' ? '/architecture' : '/os-selection';
+    if (os === 'android') {
+      return '/android-music';
+    } else if (os === 'windows') {
+      return '/architecture';
+    }
+    return '/os-selection';
   };
 
   const getBackText = () => {
-    return os === 'windows' ? 'Back to Architecture Check' : 'Back to OS Selection';
+    if (os === 'android') {
+      return 'Back to Music Options';
+    } else if (os === 'windows') {
+      return 'Back to Architecture Check';
+    }
+    return 'Back to OS Selection';
   };
 
   return (
