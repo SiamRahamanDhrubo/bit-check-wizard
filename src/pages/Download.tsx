@@ -41,7 +41,7 @@ const DownloadPage = () => {
   const getDownloadUrl = () => {
     if (os === 'android') {
       if (music === 'without') {
-        return 'https://mega.nz/file/XcdkzRRQ#9LZe6jbvVBg5-PdbKNf63SEM9oaub3F2XcSyuIBUsuM';
+        return 'https://mega.nz/file/zR1B2TxA#hVWrQTD6YR4QC8384ytm0iwMRJuGrnwkBH9ogMkh6FE';
       } else if (music === 'with') {
         // TODO: Add the "with music" download link here
         return '#'; // Placeholder for now
