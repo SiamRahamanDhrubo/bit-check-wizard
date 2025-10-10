@@ -43,8 +43,7 @@ const DownloadPage = () => {
       if (music === 'without') {
         return 'https://mega.nz/file/zR1B2TxA#hVWrQTD6YR4QC8384ytm0iwMRJuGrnwkBH9ogMkh6FE';
       } else if (music === 'with') {
-        // TODO: Add the "with music" download link here
-        return '#'; // Placeholder for now
+        return 'https://mega.nz/file/CV02lQDS#QAKRMj-1DX0581meZrmcZYE16wbF7P1oxNA26eK8yX8';
       }
     } else if (os === 'windows') {
       return architecture === '32-bit' 
