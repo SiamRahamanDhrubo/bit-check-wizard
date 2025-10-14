@@ -2,13 +2,17 @@
 import { useState, useEffect } from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import { Download, ArrowLeft, CheckCircle } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 
 const DownloadPage = () => {
   const location = useLocation();
+  const { toast } = useToast();
   const [os, setOs] = useState<string>('');
   const [architecture, setArchitecture] = useState<string>('');
   const [music, setMusic] = useState<string>('');
   const [isDownloading, setIsDownloading] = useState(false);
+  const [downloadUrl, setDownloadUrl] = useState<string>('');
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -26,10 +30,58 @@ const DownloadPage = () => {
     }
   }, [location]);
 
+  useEffect(() => {
+    const fetchDownloadUrl = async () => {
+      if (!os) return;
+
+      try {
+        let query = supabase
+          .from('download_links')
+          .select('url')
+          .eq('os', os);
+
+        if (architecture) {
+          query = query.eq('architecture', architecture);
+        }
+
+        if (music) {
+          query = query.eq('music', music);
+        }
+
+        const { data, error } = await query.maybeSingle();
+
+        if (error) {
+          console.error('Error fetching download URL:', error);
+          toast({
+            title: 'Error',
+            description: 'Failed to fetch download link',
+            variant: 'destructive',
+          });
+          return;
+        }
+
+        if (data) {
+          setDownloadUrl(data.url);
+        }
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    };
+
+    fetchDownloadUrl();
+  }, [os, architecture, music, toast]);
+
   const handleDownload = () => {
+    if (!downloadUrl) {
+      toast({
+        title: 'Error',
+        description: 'Download link not available',
+        variant: 'destructive',
+      });
+      return;
+    }
+
     setIsDownloading(true);
-    
-    const downloadUrl = getDownloadUrl();
     window.open(downloadUrl, '_blank');
     
     // Reset downloading state
@@ -38,24 +90,10 @@ const DownloadPage = () => {
     }, 1000);
   };
 
-  const getDownloadUrl = () => {
-    if (os === 'android') {
-      if (music === 'without') {
-        return 'https://mega.nz/file/zR1B2TxA#hVWrQTD6YR4QC8384ytm0iwMRJuGrnwkBH9ogMkh6FE';
-      } else if (music === 'with') {
-        return 'https://mega.nz/file/CV02lQDS#QAKRMj-1DX0581meZrmcZYE16wbF7P1oxNA26eK8yX8';
-      }
-    } else if (os === 'windows') {
-      return architecture === '32-bit' 
-        ? 'https://mega.nz/file/XYdkhKQD#5FExUMIAoweOuSJvkngtEC3zYn5zdlDhZfjzuQ0ErP8'
-        : 'https://mega.nz/file/iV1zwSZJ#_Oo5mZiiOpB-vuzaR9pvIIbyp4ycWufA6OQwYTGfUyU';
-    }
-    return '';
-  };
-
   const getDisplayText = () => {
     if (os === 'android') {
-      return `Android ${music === 'with' ? '(With Music)' : '(Without Music)'}`;
+      const archText = architecture === 'arm-v8a' ? 'Newer Phones (ARM-v8a)' : 'Older Phones';
+      return `Android - ${archText} ${music === 'with' ? '(With Music)' : '(Without Music)'}`;
     } else if (os === 'windows') {
       return `Windows ${architecture}`;
     }
@@ -64,7 +102,7 @@ const DownloadPage = () => {
 
   const getBackLink = () => {
     if (os === 'android') {
-      return '/android-music';
+      return `/android-music?arch=${architecture}`;
     } else if (os === 'windows') {
       return '/architecture';
     }

@@ -14,7 +14,7 @@ const OSSelection = () => {
       if (answer === 'Windows') {
         navigate('/architecture');
       } else if (answer === 'Android') {
-        navigate('/android-music');
+        navigate('/android-architecture');
       }
     }, 1500);
   };
@@ -67,7 +67,7 @@ const OSSelection = () => {
                   You selected: <span className="font-semibold text-green-700">{selectedAnswer}</span>
                 </p>
                 <p className="text-sm text-gray-600 mt-2">
-                  {selectedAnswer === 'Windows' ? 'Redirecting to architecture check...' : 'Redirecting to music options...'}
+                  {selectedAnswer === 'Windows' ? 'Redirecting to architecture check...' : 'Redirecting to device type selection...'}
                 </p>
               </div>
               <button

@@ -1,18 +1,28 @@
 
-import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { Music, VolumeX, CheckCircle, ArrowLeft } from 'lucide-react';
 
 const AndroidMusicSelection = () => {
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
+  const [architecture, setArchitecture] = useState<string>('');
   const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const archParam = params.get('arch');
+    if (archParam) {
+      setArchitecture(archParam);
+    }
+  }, [location]);
 
   const handleAnswerSelect = (answer: string) => {
     setSelectedAnswer(answer);
     // Navigate to download page after a short delay to show the selection
     setTimeout(() => {
       const musicParam = answer === 'With Music' ? 'with' : 'without';
-      navigate(`/download?os=android&music=${musicParam}`);
+      navigate(`/download?os=android&arch=${architecture}&music=${musicParam}`);
     }, 1500);
   };
 
@@ -80,11 +90,11 @@ const AndroidMusicSelection = () => {
 
           <div className="mt-6">
             <Link
-              to="/os-selection"
+              to="/android-architecture"
               className="inline-flex items-center text-gray-600 hover:text-gray-800 transition-colors duration-200"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to OS Selection
+              Back to Device Type
             </Link>
           </div>
 
