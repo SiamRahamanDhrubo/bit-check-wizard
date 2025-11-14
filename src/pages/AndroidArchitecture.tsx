@@ -60,7 +60,11 @@ const AndroidArchitecture = () => {
                 onClick={() => handleAnswerSelect('combined')}
                 className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white font-semibold py-5 px-8 rounded-xl transition-all duration-200 transform hover:scale-105 hover:shadow-lg text-lg"
               >
-                Combined
+                <div className="flex items-center justify-center gap-2">
+                  <AlertTriangle className="w-5 h-5" />
+                  <span>Combined</span>
+                </div>
+                <p className="text-sm font-normal mt-1 opacity-90">APKs have issues - try again later for fixed version</p>
               </button>
             </div>
           ) : (
