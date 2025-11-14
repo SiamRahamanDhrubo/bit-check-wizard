@@ -46,7 +46,7 @@ const AndroidArchitecture = () => {
                 onClick={() => handleAnswerSelect('older')}
                 className="w-full bg-gradient-to-r from-purple-500 to-purple-600 text-white font-semibold py-5 px-8 rounded-xl transition-all duration-200 transform hover:scale-105 hover:shadow-lg text-lg"
               >
-                For Older Phones
+                For Older Phones (Older Version)
               </button>
               <button
                 onClick={() => handleAnswerSelect('combined')}
