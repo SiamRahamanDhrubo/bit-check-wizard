@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Smartphone, ArrowLeft } from 'lucide-react';
+import { Smartphone, ArrowLeft, AlertTriangle } from 'lucide-react';
 
 const AndroidArchitecture = () => {
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
@@ -40,13 +40,21 @@ const AndroidArchitecture = () => {
                 onClick={() => handleAnswerSelect('arm-v8a')}
                 className="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold py-5 px-8 rounded-xl transition-all duration-200 transform hover:scale-105 hover:shadow-lg text-lg"
               >
-                For Newer Phones (ARM-v8a)
+                <div className="flex items-center justify-center gap-2">
+                  <AlertTriangle className="w-5 h-5" />
+                  <span>For Newer Phones (ARM-v8a)</span>
+                </div>
+                <p className="text-sm font-normal mt-1 opacity-90">Older versions only</p>
               </button>
               <button
                 onClick={() => handleAnswerSelect('older')}
                 className="w-full bg-gradient-to-r from-purple-500 to-purple-600 text-white font-semibold py-5 px-8 rounded-xl transition-all duration-200 transform hover:scale-105 hover:shadow-lg text-lg"
               >
-                For Older Phones (Older Version)
+                <div className="flex items-center justify-center gap-2">
+                  <AlertTriangle className="w-5 h-5" />
+                  <span>For Older Phones (Older Version)</span>
+                </div>
+                <p className="text-sm font-normal mt-1 opacity-90">Older versions only</p>
               </button>
               <button
                 onClick={() => handleAnswerSelect('combined')}
