@@ -14,6 +14,38 @@ export type Database = {
   }
   public: {
     Tables: {
+      code_redemptions: {
+        Row: {
+          code_id: string
+          device_identifier: string | null
+          id: string
+          ip_address: string | null
+          redeemed_at: string
+        }
+        Insert: {
+          code_id: string
+          device_identifier?: string | null
+          id?: string
+          ip_address?: string | null
+          redeemed_at?: string
+        }
+        Update: {
+          code_id?: string
+          device_identifier?: string | null
+          id?: string
+          ip_address?: string | null
+          redeemed_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "code_redemptions_code_id_fkey"
+            columns: ["code_id"]
+            isOneToOne: false
+            referencedRelation: "redemption_codes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       download_links: {
         Row: {
           architecture: string | null
@@ -38,6 +70,48 @@ export type Database = {
           music?: string | null
           os?: string
           url?: string
+        }
+        Relationships: []
+      }
+      redemption_codes: {
+        Row: {
+          app_type: string
+          code: string
+          created_at: string
+          current_uses: number
+          expiry_month: number
+          expiry_year: number
+          id: string
+          is_active: boolean
+          max_uses: number
+          secret_key1: string
+          secret_key2: string
+        }
+        Insert: {
+          app_type: string
+          code: string
+          created_at?: string
+          current_uses?: number
+          expiry_month: number
+          expiry_year: number
+          id?: string
+          is_active?: boolean
+          max_uses?: number
+          secret_key1: string
+          secret_key2: string
+        }
+        Update: {
+          app_type?: string
+          code?: string
+          created_at?: string
+          current_uses?: number
+          expiry_month?: number
+          expiry_year?: number
+          id?: string
+          is_active?: boolean
+          max_uses?: number
+          secret_key1?: string
+          secret_key2?: string
         }
         Relationships: []
       }
