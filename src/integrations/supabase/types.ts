@@ -120,7 +120,18 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      validate_code: {
+        Args: { code_input: string }
+        Returns: {
+          app_type: string
+          current_uses: number
+          expiry_month: number
+          expiry_year: number
+          id: string
+          is_valid: boolean
+          max_uses: number
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never

@@ -14,82 +14,44 @@ const Redeem = () => {
   const [validationResult, setValidationResult] = useState<"success" | "error" | null>(null);
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
 
-  const parseCode = (inputCode: string) => {
-    // Code format: [expiry MMY][max uses 3 digits][encrypted keys][app suffix]
-    // Example: 127002ABCD1234MCD
-    const cleanCode = inputCode.trim().toUpperCase();
-    
-    // Get app suffix (last 2-3 chars)
-    const suffix = cleanCode.slice(-3);
-    const appPrefix = suffix === "MCD" ? "MCD" : (cleanCode.slice(-2) === "GD" ? "GD" : null);
-    
-    if (!appPrefix) return null;
-    
-    const suffixLength = appPrefix.length;
-    const codeWithoutSuffix = cleanCode.slice(0, -suffixLength);
-    
-    // First 3 chars = expiry (e.g., 127 = Jan 2027)
-    const expiryPart = codeWithoutSuffix.slice(0, 3);
-    const expiryMonth = parseInt(expiryPart.slice(0, 1), 10) || parseInt(expiryPart.slice(0, 2), 10);
-    const expiryYear = 2000 + parseInt(expiryPart.slice(-2), 10);
-    
-    // Next 3 chars = max uses
-    const maxUses = parseInt(codeWithoutSuffix.slice(3, 6), 10);
-    
-    // Rest = encrypted secret keys
-    const encryptedKeys = codeWithoutSuffix.slice(6);
-    
-    return {
-      expiryMonth,
-      expiryYear,
-      maxUses,
-      encryptedKeys,
-      appType: appPrefix,
-      fullCode: cleanCode
-    };
-  };
-
   const validateCode = async () => {
     setIsValidating(true);
     setValidationResult(null);
     
     try {
-      const parsed = parseCode(code);
+      const cleanCode = code.trim().toUpperCase();
       
-      if (!parsed) {
-        throw new Error("Invalid code format");
+      if (!cleanCode) {
+        throw new Error("Please enter a code");
       }
       
-      // Check if code exists and is valid
+      // Use the secure validate_code function
       const { data: codeData, error: codeError } = await supabase
-        .from("redemption_codes")
-        .select("*")
-        .eq("code", parsed.fullCode)
-        .eq("is_active", true)
-        .single();
+        .rpc("validate_code", { code_input: cleanCode });
       
-      if (codeError || !codeData) {
+      if (codeError) {
+        throw new Error("Failed to validate code");
+      }
+      
+      if (!codeData || codeData.length === 0) {
         throw new Error("Code not found or inactive");
       }
       
-      // Check if code has expired
-      const now = new Date();
-      const expiryDate = new Date(codeData.expiry_year, codeData.expiry_month - 1, 1);
-      if (now > expiryDate) {
-        throw new Error("Code has expired");
-      }
+      const validCode = codeData[0];
       
-      // Check if max uses reached
-      if (codeData.current_uses >= codeData.max_uses) {
-        throw new Error("Code has reached maximum uses");
+      if (!validCode.is_valid) {
+        if (validCode.current_uses >= validCode.max_uses) {
+          throw new Error("Code has reached maximum uses");
+        }
+        throw new Error("Code has expired");
       }
       
       // Record the redemption
       const { error: redemptionError } = await supabase
         .from("code_redemptions")
         .insert({
-          code_id: codeData.id,
-          device_identifier: navigator.userAgent
+          code_id: validCode.id,
+          device_identifier: navigator.userAgent.substring(0, 255)
         });
       
       if (redemptionError) {
@@ -100,7 +62,7 @@ const Redeem = () => {
       const { data: downloadData } = await supabase
         .from("download_links")
         .select("url")
-        .eq("os", codeData.app_type === "MCD" ? "android" : "windows")
+        .eq("os", validCode.app_type === "MCD" ? "android" : "windows")
         .limit(1)
         .single();
       
@@ -158,6 +120,7 @@ const Redeem = () => {
               type="text"
               value={code}
               onChange={(e) => setCode(e.target.value.toUpperCase())}
+              onKeyDown={(e) => e.key === "Enter" && !isValidating && validateCode()}
               placeholder="e.g., 127002ABCD1234MCD"
               className="w-full px-4 py-3 bg-gray-900 border border-gray-600 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent font-mono text-lg tracking-wider"
               disabled={isValidating || validationResult === "success"}
