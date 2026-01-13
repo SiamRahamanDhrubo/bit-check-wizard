@@ -1,11 +1,16 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Plus, Copy, Check } from "lucide-react";
+import { ArrowLeft, Plus, Copy, Check, Lock, Eye, EyeOff } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 
+const ADMIN_PASSWORD = "Dhrubo2222MCEDITSITE";
+
 const AdminCodes = () => {
   const navigate = useNavigate();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [appType, setAppType] = useState<"GD" | "MCD">("MCD");
   const [expiryMonth, setExpiryMonth] = useState(1);
   const [expiryYear, setExpiryYear] = useState(2027);
@@ -14,8 +19,24 @@ const AdminCodes = () => {
   const [generatedCode, setGeneratedCode] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
+  const handleLogin = () => {
+    if (password === ADMIN_PASSWORD) {
+      setIsAuthenticated(true);
+      toast({
+        title: "Access Granted",
+        description: "Welcome to the code generator.",
+      });
+    } else {
+      toast({
+        title: "Access Denied",
+        description: "Incorrect password.",
+        variant: "destructive",
+      });
+    }
+  };
+
   const generateSecretKeys = () => {
-    // Generate 2 random encrypted keys (8 chars total)
+    // Generate 2 random encrypted keys (8 chars total) - changes every time
     const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     let keys = "";
     for (let i = 0; i < 8; i++) {
@@ -78,6 +99,63 @@ const AdminCodes = () => {
       setTimeout(() => setCopied(false), 2000);
     }
   };
+
+  // Password login screen
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 text-white flex flex-col items-center justify-center p-6">
+        <div className="max-w-md w-full">
+          <button
+            onClick={() => navigate("/")}
+            className="flex items-center gap-2 text-gray-400 hover:text-white mb-8 transition-colors"
+          >
+            <ArrowLeft className="w-5 h-5" />
+            <span>Go Back</span>
+          </button>
+
+          <div className="text-center mb-8">
+            <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-red-500 to-orange-500 rounded-full mb-6">
+              <Lock className="w-10 h-10" />
+            </div>
+            <h1 className="text-3xl font-bold mb-2">Admin Access</h1>
+            <p className="text-gray-400">Enter password to generate codes</p>
+          </div>
+
+          <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-6 border border-gray-700">
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Password
+              </label>
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handleLogin()}
+                  placeholder="Enter admin password"
+                  className="w-full px-4 py-3 pr-12 bg-gray-900 border border-gray-600 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
+                >
+                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                </button>
+              </div>
+            </div>
+
+            <button
+              onClick={handleLogin}
+              className="w-full bg-gradient-to-r from-red-500 to-orange-500 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 transform hover:scale-105"
+            >
+              Unlock
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 text-white flex flex-col items-center justify-center p-6">
@@ -186,12 +264,12 @@ const AdminCodes = () => {
             <div className="mt-4 p-4 bg-gray-900 rounded-xl border border-green-500/30">
               <p className="text-sm text-gray-400 mb-2">Generated Code:</p>
               <div className="flex items-center gap-2">
-                <code className="flex-1 text-lg font-mono text-green-400 tracking-wider">
+                <code className="flex-1 text-lg font-mono text-green-400 tracking-wider break-all">
                   {generatedCode}
                 </code>
                 <button
                   onClick={copyToClipboard}
-                  className="p-2 hover:bg-gray-800 rounded-lg transition-colors"
+                  className="p-2 hover:bg-gray-800 rounded-lg transition-colors flex-shrink-0"
                 >
                   {copied ? (
                     <Check className="w-5 h-5 text-green-400" />
