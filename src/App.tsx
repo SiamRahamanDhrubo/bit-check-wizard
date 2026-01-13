@@ -12,6 +12,8 @@ import GeometryDashOS from "./pages/GeometryDashOS";
 import UpGraderlyDownload from "./pages/UpGraderlyDownload";
 import Architecture from "./pages/Architecture";
 import Download from "./pages/Download";
+import Redeem from "./pages/Redeem";
+import AdminCodes from "./pages/AdminCodes";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -31,6 +33,8 @@ const App = () => (
           <Route path="/upgraderly-download" element={<UpGraderlyDownload />} />
           <Route path="/architecture" element={<Architecture />} />
           <Route path="/download" element={<Download />} />
+          <Route path="/redeem" element={<Redeem />} />
+          <Route path="/admin/codes" element={<AdminCodes />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
