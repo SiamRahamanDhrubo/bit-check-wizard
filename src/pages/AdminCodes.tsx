@@ -4,8 +4,6 @@ import { ArrowLeft, Plus, Copy, Check, Lock, Eye, EyeOff } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 
-const ADMIN_PASSWORD = "Dhrubo2222MCEDITSITE";
-
 const AdminCodes = () => {
   const navigate = useNavigate();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -18,64 +16,48 @@ const AdminCodes = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedCode, setGeneratedCode] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [storedPassword, setStoredPassword] = useState("");
 
-  const handleLogin = () => {
-    if (password === ADMIN_PASSWORD) {
-      setIsAuthenticated(true);
-      toast({
-        title: "Access Granted",
-        description: "Welcome to the code generator.",
-      });
-    } else {
-      toast({
-        title: "Access Denied",
-        description: "Incorrect password.",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const generateSecretKeys = () => {
-    // Generate 2 random encrypted keys (8 chars total) - changes every time
-    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    let keys = "";
-    for (let i = 0; i < 8; i++) {
-      keys += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    return keys;
+  const handleLogin = async () => {
+    // Store password for later use with edge function
+    // The actual validation happens server-side
+    setStoredPassword(password);
+    setIsAuthenticated(true);
+    setPassword("");
+    toast({
+      title: "Proceeding...",
+      description: "Password will be validated when generating codes.",
+    });
   };
 
   const generateCode = async () => {
     setIsGenerating(true);
     
     try {
-      // Format: [expiry MMY][max uses 3 digits][encrypted keys][app suffix]
-      const monthStr = expiryMonth.toString();
-      const yearStr = (expiryYear % 100).toString().padStart(2, "0");
-      const usesStr = maxUses.toString().padStart(3, "0");
-      const secretKeys = generateSecretKeys();
+      const { data, error } = await supabase.functions.invoke("generate-code", {
+        body: {
+          password: storedPassword,
+          appType,
+          expiryMonth,
+          expiryYear,
+          maxUses,
+        },
+      });
       
-      const code = `${monthStr}${yearStr}${usesStr}${secretKeys}${appType}`;
+      if (error) {
+        throw new Error(error.message || "Failed to generate code");
+      }
       
-      // Extract the two secret keys (4 chars each)
-      const secretKey1 = secretKeys.slice(0, 4);
-      const secretKey2 = secretKeys.slice(4, 8);
+      if (data.error) {
+        if (data.error.includes("Unauthorized")) {
+          setIsAuthenticated(false);
+          setStoredPassword("");
+          throw new Error("Invalid password. Please try again.");
+        }
+        throw new Error(data.error);
+      }
       
-      const { error } = await supabase
-        .from("redemption_codes")
-        .insert({
-          code,
-          app_type: appType,
-          expiry_month: expiryMonth,
-          expiry_year: expiryYear,
-          max_uses: maxUses,
-          secret_key1: secretKey1,
-          secret_key2: secretKey2,
-        });
-      
-      if (error) throw error;
-      
-      setGeneratedCode(code);
+      setGeneratedCode(data.code);
       toast({
         title: "Code Generated!",
         description: "Your redemption code has been created.",
