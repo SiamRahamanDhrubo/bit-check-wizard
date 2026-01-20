@@ -48,12 +48,6 @@ const AndroidArchitecture = () => {
               >
                 For Older Phones (Older Version)
               </button>
-              <button
-                onClick={() => handleAnswerSelect('combined')}
-                className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white font-semibold py-5 px-8 rounded-xl transition-all duration-200 transform hover:scale-105 hover:shadow-lg text-lg"
-              >
-                Combined
-              </button>
             </div>
           ) : (
             <div className="text-center">
