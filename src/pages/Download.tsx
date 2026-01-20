@@ -159,7 +159,7 @@ const DownloadPage = () => {
               ) : (
                 <span className="flex items-center justify-center">
                   <Download className="w-5 h-5 mr-2" />
-                  Download from Mega.nz
+                  Download
                 </span>
               )}
             </button>
