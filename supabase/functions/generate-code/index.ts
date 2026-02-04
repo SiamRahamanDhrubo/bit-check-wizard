@@ -1,23 +1,34 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { encode as base64Encode } from "https://deno.land/std@0.224.0/encoding/base64.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-// Get admin password from environment
 const ADMIN_PASSWORD = Deno.env.get("ADMIN_PASSWORD");
 
+// Simple XOR encryption with key
+function encryptSecret(secret: string, key: string): string {
+  const keyBytes = new TextEncoder().encode(key);
+  const secretBytes = new TextEncoder().encode(secret);
+  const encrypted = new Uint8Array(secretBytes.length);
+  
+  for (let i = 0; i < secretBytes.length; i++) {
+    encrypted[i] = secretBytes[i] ^ keyBytes[i % keyBytes.length];
+  }
+  
+  return base64Encode(encrypted);
+}
+
 Deno.serve(async (req) => {
-  // Handle CORS preflight
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const { password, appType, expiryMonth, expiryYear, maxUses } = await req.json();
+    const { password, appType, expiryMonth, expiryYear, maxUses, customSecret1, customSecret2, encryptionKey } = await req.json();
 
-    // Validate admin password server-side
     if (password !== ADMIN_PASSWORD) {
       return new Response(
         JSON.stringify({ error: "Unauthorized: Invalid password" }),
@@ -25,8 +36,7 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Validate input
-    if (!appType || !["GD", "MCD"].includes(appType)) {
+    if (!appType || !["GD", "MCD", "RB"].includes(appType)) {
       return new Response(
         JSON.stringify({ error: "Invalid app type" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -49,26 +59,33 @@ Deno.serve(async (req) => {
 
     const validMaxUses = Math.max(1, Math.min(999, maxUses || 1));
 
-    // Generate secret keys (8 chars total, 4 each)
-    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    let secretKeys = "";
-    for (let i = 0; i < 8; i++) {
-      secretKeys += chars.charAt(Math.floor(Math.random() * chars.length));
+    // Use custom secrets if provided, otherwise generate random
+    let secretKey1: string;
+    let secretKey2: string;
+    
+    if (customSecret1 && customSecret2 && encryptionKey) {
+      // Encrypt the custom secrets
+      secretKey1 = encryptSecret(customSecret1, encryptionKey).slice(0, 4);
+      secretKey2 = encryptSecret(customSecret2, encryptionKey).slice(0, 4);
+    } else {
+      // Generate random keys
+      const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+      secretKey1 = "";
+      secretKey2 = "";
+      for (let i = 0; i < 4; i++) {
+        secretKey1 += chars.charAt(Math.floor(Math.random() * chars.length));
+        secretKey2 += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
     }
 
-    // Build the code
+    const secretKeys = secretKey1 + secretKey2;
     const monthStr = expiryMonth.toString();
     const yearStr = (expiryYear % 100).toString().padStart(2, "0");
     const usesStr = validMaxUses.toString().padStart(3, "0");
     const code = `${monthStr}${yearStr}${usesStr}${secretKeys}${appType}`;
 
-    const secretKey1 = secretKeys.slice(0, 4);
-    const secretKey2 = secretKeys.slice(4, 8);
-
-    // Use service role to bypass RLS
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     const { error } = await supabase
