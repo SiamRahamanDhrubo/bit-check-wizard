@@ -1,1 +1,10 @@
 project_id = "kkwmvgmauyoozvgcvuat"
+
+[functions.generate-code]
+verify_jwt = false
+
+[functions.uuid-auth]
+verify_jwt = false
+
+[functions.admin-users]
+verify_jwt = false

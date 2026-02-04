@@ -1,20 +1,29 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Gamepad2, CheckCircle } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
+import AccountIcon from '@/components/AccountIcon';
 
 const GameSelection = () => {
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const navigate = useNavigate();
+  const { user, isLoading } = useAuth();
+
+  useEffect(() => {
+    if (!isLoading && !user) {
+      navigate('/auth');
+    }
+  }, [user, isLoading, navigate]);
 
   const handleAnswerSelect = (answer: string) => {
     setSelectedAnswer(answer);
-    // Navigate to appropriate page after a short delay to show the selection
+    // Navigate to redemption page with game type
     setTimeout(() => {
       if (answer === 'Minecraft') {
-        navigate('/os-selection');
+        navigate('/redeem?app=MCD');
       } else if (answer === 'Geometry Dash') {
-        navigate('/geometry-dash-os');
+        navigate('/redeem?app=GD');
       } else if (answer === 'UpGraderly') {
         navigate('/upgraderly-download');
       }
@@ -25,8 +34,17 @@ const GameSelection = () => {
     setSelectedAnswer(null);
   };
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-indigo-100 flex items-center justify-center">
+        <div className="animate-spin w-8 h-8 border-4 border-purple-600 border-t-transparent rounded-full"></div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-indigo-100 flex items-center justify-center p-4">
+      <AccountIcon />
       <div className="max-w-2xl w-full">
         <div className="bg-white rounded-2xl shadow-xl p-8 md:p-12 text-center">
           <div className="mb-8">

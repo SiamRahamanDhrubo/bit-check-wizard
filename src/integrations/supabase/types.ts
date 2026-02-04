@@ -21,6 +21,7 @@ export type Database = {
           id: string
           ip_address: string | null
           redeemed_at: string
+          user_id: string | null
         }
         Insert: {
           code_id: string
@@ -28,6 +29,7 @@ export type Database = {
           id?: string
           ip_address?: string | null
           redeemed_at?: string
+          user_id?: string | null
         }
         Update: {
           code_id?: string
@@ -35,6 +37,7 @@ export type Database = {
           id?: string
           ip_address?: string | null
           redeemed_at?: string
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -42,6 +45,13 @@ export type Database = {
             columns: ["code_id"]
             isOneToOne: false
             referencedRelation: "redemption_codes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "code_redemptions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "uuid_users"
             referencedColumns: ["id"]
           },
         ]
@@ -112,6 +122,68 @@ export type Database = {
           max_uses?: number
           secret_key1?: string
           secret_key2?: string
+        }
+        Relationships: []
+      }
+      user_sessions: {
+        Row: {
+          created_at: string
+          expires_at: string
+          id: string
+          session_token: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at: string
+          id?: string
+          session_token: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          session_token?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_sessions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "uuid_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      uuid_users: {
+        Row: {
+          ban_reason: string | null
+          created_at: string
+          id: string
+          is_banned: boolean
+          last_login_at: string | null
+          password_hash: string
+          uuid_code: string
+        }
+        Insert: {
+          ban_reason?: string | null
+          created_at?: string
+          id?: string
+          is_banned?: boolean
+          last_login_at?: string | null
+          password_hash: string
+          uuid_code: string
+        }
+        Update: {
+          ban_reason?: string | null
+          created_at?: string
+          id?: string
+          is_banned?: boolean
+          last_login_at?: string | null
+          password_hash?: string
+          uuid_code?: string
         }
         Relationships: []
       }
