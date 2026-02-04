@@ -102,15 +102,24 @@ const Redeem = () => {
   };
 
   const getAppName = () => {
-    return appType === "MCD" ? "Minecraft" : "Geometry Dash";
+    if (appType === "MCD") return "Minecraft";
+    if (appType === "GD") return "Geometry Dash";
+    if (appType === "RB") return "Roblox";
+    return "Unknown";
   };
 
   const handleContinueToDownload = () => {
     // Navigate to the appropriate game download flow
     if (appType === 'MCD') {
       navigate('/os-selection');
-    } else {
+    } else if (appType === 'GD') {
       navigate('/geometry-dash-os');
+    } else if (appType === 'RB') {
+      // Roblox is redeem-only, no download flow
+      toast({
+        title: "Robux Redeemed!",
+        description: "Your Robux has been added to your account.",
+      });
     }
   };
 
