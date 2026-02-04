@@ -125,6 +125,47 @@ export type Database = {
         }
         Relationships: []
       }
+      roblox_codes: {
+        Row: {
+          code: string
+          created_at: string
+          id: string
+          is_used: boolean
+          redeemed_at: string | null
+          redeemed_by: string | null
+          robux_amount: number
+          robux_type: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          id?: string
+          is_used?: boolean
+          redeemed_at?: string | null
+          redeemed_by?: string | null
+          robux_amount: number
+          robux_type: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          id?: string
+          is_used?: boolean
+          redeemed_at?: string | null
+          redeemed_by?: string | null
+          robux_amount?: number
+          robux_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "roblox_codes_redeemed_by_fkey"
+            columns: ["redeemed_by"]
+            isOneToOne: false
+            referencedRelation: "uuid_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_sessions: {
         Row: {
           created_at: string
