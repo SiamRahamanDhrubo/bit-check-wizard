@@ -27,7 +27,7 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { password, appType, expiryMonth, expiryYear, maxUses, customSecret1, customSecret2, encryptionKey } = await req.json();
+    const { password, appType, expiryMonth, expiryYear, maxUses, customSecret1, customSecret2, encryptionKey, robuxType } = await req.json();
 
     if (password !== ADMIN_PASSWORD) {
       return new Response(
@@ -39,6 +39,14 @@ Deno.serve(async (req) => {
     if (!appType || !["GD", "MCD", "RB"].includes(appType)) {
       return new Response(
         JSON.stringify({ error: "Invalid app type" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Validate robuxType for Roblox codes
+    if (appType === "RB" && robuxType && !["A", "B"].includes(robuxType)) {
+      return new Response(
+        JSON.stringify({ error: "Invalid Robux type. Must be A (100) or B (500)" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -82,7 +90,10 @@ Deno.serve(async (req) => {
     const monthStr = expiryMonth.toString();
     const yearStr = (expiryYear % 100).toString().padStart(2, "0");
     const usesStr = validMaxUses.toString().padStart(3, "0");
-    const code = `${monthStr}${yearStr}${usesStr}${secretKeys}${appType}`;
+    
+    // For Roblox, append the robux type (A or B) at the end
+    const typeSuffix = appType === "RB" && robuxType ? robuxType : "";
+    const code = `${monthStr}${yearStr}${usesStr}${secretKeys}${appType}${typeSuffix}`;
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;

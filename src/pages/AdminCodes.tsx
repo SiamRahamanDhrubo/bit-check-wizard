@@ -10,6 +10,7 @@ const AdminCodes = () => {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [appType, setAppType] = useState<"GD" | "MCD" | "RB">("MCD");
+  const [robuxType, setRobuxType] = useState<"A" | "B">("A");
   const [expiryMonth, setExpiryMonth] = useState(1);
   const [expiryYear, setExpiryYear] = useState(2027);
   const [maxUses, setMaxUses] = useState(1);
@@ -44,6 +45,7 @@ const AdminCodes = () => {
         expiryMonth,
         expiryYear,
         maxUses,
+        ...(appType === "RB" && { robuxType }),
       };
       
       if (useCustomSecrets && customSecret1 && customSecret2 && encryptionKey) {
@@ -207,6 +209,37 @@ const AdminCodes = () => {
             </div>
           </div>
 
+          {/* Robux Type (only for Roblox) */}
+          {appType === "RB" && (
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Robux Amount
+              </label>
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  onClick={() => setRobuxType("A")}
+                  className={`py-3 px-4 rounded-xl font-medium transition-all ${
+                    robuxType === "A"
+                      ? "bg-green-500 text-white"
+                      : "bg-gray-700 text-gray-300 hover:bg-gray-600"
+                  }`}
+                >
+                  Type A (100 Robux)
+                </button>
+                <button
+                  onClick={() => setRobuxType("B")}
+                  className={`py-3 px-4 rounded-xl font-medium transition-all ${
+                    robuxType === "B"
+                      ? "bg-purple-500 text-white"
+                      : "bg-gray-700 text-gray-300 hover:bg-gray-600"
+                  }`}
+                >
+                  Type B (500 Robux)
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* Expiry Date */}
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">
@@ -361,7 +394,7 @@ const AdminCodes = () => {
         </div>
 
         <p className="text-center text-gray-500 text-sm mt-6">
-          Format: [Expiry MMY][Uses 3 digits][Keys 8 chars][App]
+          Format: [Expiry MMY][Uses 3 digits][Keys 8 chars][App][Type for RB]
         </p>
       </div>
     </div>

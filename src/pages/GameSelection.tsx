@@ -26,6 +26,8 @@ const GameSelection = () => {
         navigate('/redeem?app=GD');
       } else if (answer === 'UpGraderly') {
         navigate('/upgraderly-download');
+      } else if (answer === 'Roblox') {
+        navigate('/redeem?app=RB');
       }
     }, 1500);
   };
@@ -79,6 +81,12 @@ const GameSelection = () => {
               >
                 <span className="text-lg">3. UpGraderly (Android only)</span>
               </button>
+              <button
+                onClick={() => handleAnswerSelect('Roblox')}
+                className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-4 px-8 rounded-xl transition-all duration-200 transform hover:scale-105 hover:shadow-lg"
+              >
+                <span className="text-lg">4. Roblox (Redeem code only)</span>
+              </button>
             </div>
           ) : (
             <div className="space-y-6">
@@ -94,9 +102,11 @@ const GameSelection = () => {
                 </p>
                 <p className="text-sm text-gray-600 mt-2">
                   {selectedAnswer === 'Minecraft' 
-                    ? 'Redirecting to OS selection...' 
+                    ? 'Redirecting to Minecraft redemption...' 
                     : selectedAnswer === 'Geometry Dash' 
-                    ? 'Redirecting to Geometry Dash OS selection...'
+                    ? 'Redirecting to Geometry Dash redemption...'
+                    : selectedAnswer === 'Roblox'
+                    ? 'Redirecting to Roblox redemption...'
                     : 'Redirecting to UpGraderly download...'}
                 </p>
               </div>
