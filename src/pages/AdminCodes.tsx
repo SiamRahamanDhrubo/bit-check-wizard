@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Plus, Copy, Check, Lock, Eye, EyeOff } from "lucide-react";
+import { ArrowLeft, Plus, Copy, Check, Lock, Eye, EyeOff, Users } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 
@@ -262,6 +262,15 @@ const AdminCodes = () => {
               </div>
             </div>
           )}
+
+          {/* Manage Users Button */}
+          <button
+            onClick={() => navigate('/admin/users')}
+            className="w-full mt-4 bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 transform hover:scale-105 flex items-center justify-center gap-2"
+          >
+            <Users className="w-5 h-5" />
+            Manage UUID Users
+          </button>
         </div>
 
         <p className="text-center text-gray-500 text-sm mt-6">

@@ -1,18 +1,27 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { ArrowLeft, Gift, CheckCircle, XCircle, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
+import AccountIcon from "@/components/AccountIcon";
 
 const Redeem = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const appType = searchParams.get("app") || "MCD";
+  const { user, isLoading: authLoading } = useAuth();
   
   const [code, setCode] = useState("");
   const [isValidating, setIsValidating] = useState(false);
   const [validationResult, setValidationResult] = useState<"success" | "error" | null>(null);
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!authLoading && !user) {
+      navigate('/auth');
+    }
+  }, [user, authLoading, navigate]);
 
   const validateCode = async () => {
     setIsValidating(true);
@@ -46,12 +55,18 @@ const Redeem = () => {
         throw new Error("Code has expired");
       }
       
-      // Record the redemption
+      // Check if code matches requested app type
+      if (validCode.app_type !== appType) {
+        throw new Error(`This code is for ${validCode.app_type === 'MCD' ? 'Minecraft' : 'Geometry Dash'}, not ${getAppName()}`);
+      }
+      
+      // Record the redemption with user_id
       const { error: redemptionError } = await supabase
         .from("code_redemptions")
         .insert({
           code_id: validCode.id,
-          device_identifier: navigator.userAgent.substring(0, 255)
+          device_identifier: navigator.userAgent.substring(0, 255),
+          user_id: user?.id
         });
       
       if (redemptionError) {
@@ -90,11 +105,29 @@ const Redeem = () => {
     return appType === "MCD" ? "Minecraft" : "Geometry Dash";
   };
 
+  const handleContinueToDownload = () => {
+    // Navigate to the appropriate game download flow
+    if (appType === 'MCD') {
+      navigate('/os-selection');
+    } else {
+      navigate('/geometry-dash-os');
+    }
+  };
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 flex items-center justify-center">
+        <Loader2 className="w-8 h-8 text-white animate-spin" />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 text-white flex flex-col items-center justify-center p-6">
+      <AccountIcon />
       <div className="max-w-md w-full">
         <button
-          onClick={() => navigate(-1)}
+          onClick={() => navigate('/')}
           className="flex items-center gap-2 text-gray-400 hover:text-white mb-8 transition-colors"
         >
           <ArrowLeft className="w-5 h-5" />
@@ -133,16 +166,12 @@ const Redeem = () => {
                 <CheckCircle className="w-6 h-6" />
                 <span className="font-medium">Code redeemed successfully!</span>
               </div>
-              {downloadUrl && (
-                <a
-                  href={downloadUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block w-full bg-gradient-to-r from-green-500 to-emerald-500 text-white font-semibold py-3 px-6 rounded-xl text-center transition-all duration-200 transform hover:scale-105"
-                >
-                  Download Now
-                </a>
-              )}
+              <button
+                onClick={handleContinueToDownload}
+                className="w-full bg-gradient-to-r from-green-500 to-emerald-500 text-white font-semibold py-3 px-6 rounded-xl text-center transition-all duration-200 transform hover:scale-105"
+              >
+                Continue to Download
+              </button>
             </div>
           ) : validationResult === "error" ? (
             <div className="space-y-4">
