@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Plus, Copy, Check, Lock, Eye, EyeOff, Users } from "lucide-react";
+import { ArrowLeft, Plus, Copy, Check, Lock, Eye, EyeOff, Users, Key } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 
@@ -9,7 +9,7 @@ const AdminCodes = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [appType, setAppType] = useState<"GD" | "MCD">("MCD");
+  const [appType, setAppType] = useState<"GD" | "MCD" | "RB">("MCD");
   const [expiryMonth, setExpiryMonth] = useState(1);
   const [expiryYear, setExpiryYear] = useState(2027);
   const [maxUses, setMaxUses] = useState(1);
@@ -17,6 +17,10 @@ const AdminCodes = () => {
   const [generatedCode, setGeneratedCode] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [storedPassword, setStoredPassword] = useState("");
+  const [useCustomSecrets, setUseCustomSecrets] = useState(false);
+  const [customSecret1, setCustomSecret1] = useState("");
+  const [customSecret2, setCustomSecret2] = useState("");
+  const [encryptionKey, setEncryptionKey] = useState("");
 
   const handleLogin = async () => {
     // Store password for later use with edge function
@@ -34,14 +38,22 @@ const AdminCodes = () => {
     setIsGenerating(true);
     
     try {
+      const body: Record<string, unknown> = {
+        password: storedPassword,
+        appType,
+        expiryMonth,
+        expiryYear,
+        maxUses,
+      };
+      
+      if (useCustomSecrets && customSecret1 && customSecret2 && encryptionKey) {
+        body.customSecret1 = customSecret1;
+        body.customSecret2 = customSecret2;
+        body.encryptionKey = encryptionKey;
+      }
+      
       const { data, error } = await supabase.functions.invoke("generate-code", {
-        body: {
-          password: storedPassword,
-          appType,
-          expiryMonth,
-          expiryYear,
-          maxUses,
-        },
+        body,
       });
       
       if (error) {
@@ -161,7 +173,7 @@ const AdminCodes = () => {
             <label className="block text-sm font-medium text-gray-300 mb-2">
               App Type
             </label>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-3 gap-3">
               <button
                 onClick={() => setAppType("MCD")}
                 className={`py-3 px-4 rounded-xl font-medium transition-all ${
@@ -181,6 +193,16 @@ const AdminCodes = () => {
                 }`}
               >
                 Geometry Dash
+              </button>
+              <button
+                onClick={() => setAppType("RB")}
+                className={`py-3 px-4 rounded-xl font-medium transition-all ${
+                  appType === "RB"
+                    ? "bg-red-500 text-white"
+                    : "bg-gray-700 text-gray-300 hover:bg-gray-600"
+                }`}
+              >
+                Roblox
               </button>
             </div>
           </div>
@@ -230,6 +252,71 @@ const AdminCodes = () => {
               className="w-full px-4 py-3 bg-gray-900 border border-gray-600 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
             />
           </div>
+
+          {/* Custom Secrets Toggle */}
+          <div className="border-t border-gray-700 pt-4">
+            <label className="flex items-center gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={useCustomSecrets}
+                onChange={(e) => setUseCustomSecrets(e.target.checked)}
+                className="w-5 h-5 rounded bg-gray-900 border-gray-600 text-purple-500 focus:ring-purple-500"
+              />
+              <span className="text-sm font-medium text-gray-300 flex items-center gap-2">
+                <Key className="w-4 h-4" />
+                Use Custom Encrypted Secrets
+              </span>
+            </label>
+          </div>
+
+          {/* Custom Secrets Fields */}
+          {useCustomSecrets && (
+            <div className="space-y-4 p-4 bg-gray-900/50 rounded-xl border border-purple-500/30">
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Encryption Key
+                </label>
+                <input
+                  type="password"
+                  value={encryptionKey}
+                  onChange={(e) => setEncryptionKey(e.target.value)}
+                  placeholder="Your encryption key"
+                  className="w-full px-4 py-3 bg-gray-900 border border-gray-600 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Secret 1
+                  </label>
+                  <input
+                    type="text"
+                    value={customSecret1}
+                    onChange={(e) => setCustomSecret1(e.target.value.slice(0, 4))}
+                    placeholder="4 chars"
+                    maxLength={4}
+                    className="w-full px-4 py-3 bg-gray-900 border border-gray-600 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 font-mono"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Secret 2
+                  </label>
+                  <input
+                    type="text"
+                    value={customSecret2}
+                    onChange={(e) => setCustomSecret2(e.target.value.slice(0, 4))}
+                    placeholder="4 chars"
+                    maxLength={4}
+                    className="w-full px-4 py-3 bg-gray-900 border border-gray-600 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 font-mono"
+                  />
+                </div>
+              </div>
+              <p className="text-xs text-gray-500">
+                Secrets will be XOR encrypted with your key
+              </p>
+            </div>
+          )}
 
           {/* Generate Button */}
           <button
