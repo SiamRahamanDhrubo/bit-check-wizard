@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { ArrowLeft, Gift, CheckCircle, XCircle, Loader2 } from "lucide-react";
+import { ArrowLeft, Gift, CheckCircle, XCircle, Loader2, Copy, Check } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
@@ -16,6 +16,9 @@ const Redeem = () => {
   const [isValidating, setIsValidating] = useState(false);
   const [validationResult, setValidationResult] = useState<"success" | "error" | null>(null);
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
+  const [robloxCode, setRobloxCode] = useState<string | null>(null);
+  const [robuxAmount, setRobuxAmount] = useState<number | null>(null);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -57,7 +60,8 @@ const Redeem = () => {
       
       // Check if code matches requested app type
       if (validCode.app_type !== appType) {
-        throw new Error(`This code is for ${validCode.app_type === 'MCD' ? 'Minecraft' : 'Geometry Dash'}, not ${getAppName()}`);
+        const appNames: Record<string, string> = { MCD: 'Minecraft', GD: 'Geometry Dash', RB: 'Roblox' };
+        throw new Error(`This code is for ${appNames[validCode.app_type] || validCode.app_type}, not ${getAppName()}`);
       }
       
       // Record the redemption with user_id
@@ -73,21 +77,44 @@ const Redeem = () => {
         throw new Error("Failed to redeem code");
       }
       
-      // Get download URL based on app type
-      const { data: downloadData } = await supabase
-        .from("download_links")
-        .select("url")
-        .eq("os", validCode.app_type === "MCD" ? "android" : "windows")
-        .limit(1)
-        .single();
+      // For Roblox, claim a real Roblox code
+      if (appType === "RB") {
+        // Extract robux type from the code (last character after RB)
+        const robuxType = cleanCode.slice(-1); // A or B
+        
+        const { data: robloxData, error: robloxError } = await supabase.functions.invoke("roblox-codes", {
+          body: { action: "claim", robuxType, userId: user?.id },
+        });
+        
+        if (robloxError || robloxData?.error) {
+          throw new Error(robloxData?.error || "Failed to claim Roblox code. No codes available.");
+        }
+        
+        setRobloxCode(robloxData.robloxCode);
+        setRobuxAmount(robloxData.robuxAmount);
+        
+        toast({
+          title: "Roblox Code Claimed!",
+          description: `You received a ${robloxData.robuxAmount} Robux code!`,
+        });
+      } else {
+        // Get download URL based on app type
+        const { data: downloadData } = await supabase
+          .from("download_links")
+          .select("url")
+          .eq("os", validCode.app_type === "MCD" ? "android" : "windows")
+          .limit(1)
+          .single();
+        
+        setDownloadUrl(downloadData?.url || null);
+        
+        toast({
+          title: "Code Redeemed!",
+          description: "Your download is ready.",
+        });
+      }
       
-      setDownloadUrl(downloadData?.url || null);
       setValidationResult("success");
-      
-      toast({
-        title: "Code Redeemed!",
-        description: "Your download is ready.",
-      });
       
     } catch (error: any) {
       setValidationResult("error");
@@ -114,12 +141,15 @@ const Redeem = () => {
       navigate('/os-selection');
     } else if (appType === 'GD') {
       navigate('/geometry-dash-os');
-    } else if (appType === 'RB') {
-      // Roblox is redeem-only, no download flow
-      toast({
-        title: "Robux Redeemed!",
-        description: "Your Robux has been added to your account.",
-      });
+    }
+    // RB doesn't have a download flow - the code is shown directly
+  };
+
+  const copyRobloxCode = () => {
+    if (robloxCode) {
+      navigator.clipboard.writeText(robloxCode);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
     }
   };
 
@@ -175,12 +205,41 @@ const Redeem = () => {
                 <CheckCircle className="w-6 h-6" />
                 <span className="font-medium">Code redeemed successfully!</span>
               </div>
-              <button
-                onClick={handleContinueToDownload}
-                className="w-full bg-gradient-to-r from-green-500 to-emerald-500 text-white font-semibold py-3 px-6 rounded-xl text-center transition-all duration-200 transform hover:scale-105"
-              >
-                Continue to Download
-              </button>
+              
+              {/* Show Roblox code if available */}
+              {robloxCode && (
+                <div className="bg-gradient-to-r from-red-900/30 to-orange-900/30 border border-red-500/30 rounded-xl p-4">
+                  <p className="text-sm text-gray-400 mb-2">Your Roblox Gift Card Code ({robuxAmount} Robux):</p>
+                  <div className="flex items-center gap-2">
+                    <code className="flex-1 text-xl font-mono text-red-400 tracking-wider break-all">
+                      {robloxCode}
+                    </code>
+                    <button
+                      onClick={copyRobloxCode}
+                      className="p-2 hover:bg-gray-800 rounded-lg transition-colors flex-shrink-0"
+                    >
+                      {copied ? (
+                        <Check className="w-5 h-5 text-green-400" />
+                      ) : (
+                        <Copy className="w-5 h-5 text-gray-400" />
+                      )}
+                    </button>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-3">
+                    Redeem at: <a href="https://www.roblox.com/redeem" target="_blank" rel="noopener noreferrer" className="text-red-400 hover:underline">roblox.com/redeem</a>
+                  </p>
+                </div>
+              )}
+              
+              {/* Show continue button for non-Roblox apps */}
+              {appType !== 'RB' && (
+                <button
+                  onClick={handleContinueToDownload}
+                  className="w-full bg-gradient-to-r from-green-500 to-emerald-500 text-white font-semibold py-3 px-6 rounded-xl text-center transition-all duration-200 transform hover:scale-105"
+                >
+                  Continue to Download
+                </button>
+              )}
             </div>
           ) : validationResult === "error" ? (
             <div className="space-y-4">

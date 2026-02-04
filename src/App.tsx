@@ -15,6 +15,7 @@ import Download from "./pages/Download";
 import Redeem from "./pages/Redeem";
 import AdminCodes from "./pages/AdminCodes";
 import AdminUsers from "./pages/AdminUsers";
+import AdminRobloxCodes from "./pages/AdminRobloxCodes";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 
@@ -40,6 +41,7 @@ const App = () => (
             <Route path="/redeem" element={<Redeem />} />
             <Route path="/admin/codes" element={<AdminCodes />} />
             <Route path="/admin/users" element={<AdminUsers />} />
+            <Route path="/admin/roblox-codes" element={<AdminRobloxCodes />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
