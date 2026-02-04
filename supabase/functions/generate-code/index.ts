@@ -5,8 +5,8 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-// Server-side admin password - NOT exposed to client
-const ADMIN_PASSWORD = "Dhrubo2222MCEDITSITE";
+// Get admin password from environment
+const ADMIN_PASSWORD = Deno.env.get("ADMIN_PASSWORD");
 
 Deno.serve(async (req) => {
   // Handle CORS preflight
