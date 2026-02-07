@@ -8,3 +8,9 @@ verify_jwt = false
 
 [functions.admin-users]
 verify_jwt = false
+
+[functions.roblox-codes]
+verify_jwt = false
+
+[functions.helpers]
+verify_jwt = false

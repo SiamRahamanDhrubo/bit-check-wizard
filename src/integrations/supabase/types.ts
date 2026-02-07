@@ -14,6 +14,44 @@ export type Database = {
   }
   public: {
     Tables: {
+      code_batches: {
+        Row: {
+          app_type: string
+          batch_name: string
+          codes_count: number
+          created_at: string
+          helper_id: string | null
+          id: string
+          robux_type: string | null
+        }
+        Insert: {
+          app_type: string
+          batch_name: string
+          codes_count: number
+          created_at?: string
+          helper_id?: string | null
+          id?: string
+          robux_type?: string | null
+        }
+        Update: {
+          app_type?: string
+          batch_name?: string
+          codes_count?: number
+          created_at?: string
+          helper_id?: string | null
+          id?: string
+          robux_type?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "code_batches_helper_id_fkey"
+            columns: ["helper_id"]
+            isOneToOne: false
+            referencedRelation: "helpers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       code_redemptions: {
         Row: {
           code_id: string
@@ -83,47 +121,107 @@ export type Database = {
         }
         Relationships: []
       }
+      helpers: {
+        Row: {
+          code: string
+          created_at: string
+          id: string
+          is_active: boolean
+          last_login_at: string | null
+          name: string
+          notes: string | null
+          password_hash: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          last_login_at?: string | null
+          name: string
+          notes?: string | null
+          password_hash: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          last_login_at?: string | null
+          name?: string
+          notes?: string | null
+          password_hash?: string
+        }
+        Relationships: []
+      }
       redemption_codes: {
         Row: {
           app_type: string
+          batch_id: string | null
           code: string
           created_at: string
           current_uses: number
           expiry_month: number
           expiry_year: number
+          helper_id: string | null
           id: string
           is_active: boolean
+          is_sold: boolean
           max_uses: number
           secret_key1: string
           secret_key2: string
+          sold_price: number | null
         }
         Insert: {
           app_type: string
+          batch_id?: string | null
           code: string
           created_at?: string
           current_uses?: number
           expiry_month: number
           expiry_year: number
+          helper_id?: string | null
           id?: string
           is_active?: boolean
+          is_sold?: boolean
           max_uses?: number
           secret_key1: string
           secret_key2: string
+          sold_price?: number | null
         }
         Update: {
           app_type?: string
+          batch_id?: string | null
           code?: string
           created_at?: string
           current_uses?: number
           expiry_month?: number
           expiry_year?: number
+          helper_id?: string | null
           id?: string
           is_active?: boolean
+          is_sold?: boolean
           max_uses?: number
           secret_key1?: string
           secret_key2?: string
+          sold_price?: number | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "redemption_codes_batch_id_fkey"
+            columns: ["batch_id"]
+            isOneToOne: false
+            referencedRelation: "code_batches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "redemption_codes_helper_id_fkey"
+            columns: ["helper_id"]
+            isOneToOne: false
+            referencedRelation: "helpers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       roblox_codes: {
         Row: {
