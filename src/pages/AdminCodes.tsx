@@ -383,23 +383,37 @@ const AdminCodes = () => {
             </div>
           )}
 
-          {/* Manage Users Button */}
-          <button
-            onClick={() => navigate('/admin/users')}
-            className="w-full mt-4 bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 transform hover:scale-105 flex items-center justify-center gap-2"
-          >
-            <Users className="w-5 h-5" />
-            Manage UUID Users
-          </button>
-
-          {/* Manage Roblox Codes Button */}
-          <button
-            onClick={() => navigate('/admin/roblox-codes')}
-            className="w-full mt-4 bg-gradient-to-r from-red-500 to-orange-500 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 transform hover:scale-105 flex items-center justify-center gap-2"
-          >
-            <Gift className="w-5 h-5" />
-            Manage Roblox Codes
-          </button>
+          {/* Management Buttons */}
+          <div className="grid grid-cols-2 gap-3 mt-4">
+            <button
+              onClick={() => navigate('/admin/helpers')}
+              className="bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-200 transform hover:scale-105 flex items-center justify-center gap-2"
+            >
+              <Users className="w-5 h-5" />
+              Helpers
+            </button>
+            <button
+              onClick={() => navigate('/admin/users')}
+              className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-200 transform hover:scale-105 flex items-center justify-center gap-2"
+            >
+              <Key className="w-5 h-5" />
+              UUID Users
+            </button>
+            <button
+              onClick={() => navigate('/admin/roblox-codes')}
+              className="bg-gradient-to-r from-red-500 to-orange-500 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-200 transform hover:scale-105 flex items-center justify-center gap-2"
+            >
+              <Gift className="w-5 h-5" />
+              Roblox Codes
+            </button>
+            <button
+              onClick={() => navigate('/admin/sales')}
+              className="bg-gradient-to-r from-green-500 to-emerald-500 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-200 transform hover:scale-105 flex items-center justify-center gap-2"
+            >
+              <Users className="w-5 h-5" />
+              Sales
+            </button>
+          </div>
         </div>
 
         <p className="text-center text-gray-500 text-sm mt-6">
