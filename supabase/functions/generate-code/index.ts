@@ -1,5 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { encode as base64Encode } from "https://deno.land/std@0.224.0/encoding/base64.ts";
+import { encodeBase64 } from "https://deno.land/std@0.224.0/encoding/base64.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -18,7 +18,7 @@ function encryptSecret(secret: string, key: string): string {
     encrypted[i] = secretBytes[i] ^ keyBytes[i % keyBytes.length];
   }
   
-  return base64Encode(encrypted);
+  return encodeBase64(encrypted);
 }
 
 Deno.serve(async (req) => {
