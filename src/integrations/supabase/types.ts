@@ -154,6 +154,44 @@ export type Database = {
         }
         Relationships: []
       }
+      profiles: {
+        Row: {
+          auth_provider: string
+          avatar_url: string | null
+          created_at: string
+          display_name: string | null
+          id: string
+          updated_at: string
+          uuid_user_id: string | null
+        }
+        Insert: {
+          auth_provider?: string
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          id: string
+          updated_at?: string
+          uuid_user_id?: string | null
+        }
+        Update: {
+          auth_provider?: string
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          updated_at?: string
+          uuid_user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profiles_uuid_user_id_fkey"
+            columns: ["uuid_user_id"]
+            isOneToOne: false
+            referencedRelation: "uuid_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       redemption_codes: {
         Row: {
           app_type: string
