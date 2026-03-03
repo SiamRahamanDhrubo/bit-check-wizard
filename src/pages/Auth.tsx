@@ -13,18 +13,9 @@ const GoogleIcon = () => (
   </svg>
 );
 
-const MicrosoftIcon = () => (
-  <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none">
-    <rect x="1" y="1" width="10" height="10" fill="#F25022"/>
-    <rect x="13" y="1" width="10" height="10" fill="#7FBA00"/>
-    <rect x="1" y="13" width="10" height="10" fill="#00A4EF"/>
-    <rect x="13" y="13" width="10" height="10" fill="#FFB900"/>
-  </svg>
-);
-
 const Auth = () => {
   const navigate = useNavigate();
-  const { user, isLoading, login, signup, loginWithGoogle, loginWithMicrosoft } = useAuth();
+  const { user, isLoading, login, signup, loginWithGoogle } = useAuth();
   const [mode, setMode] = useState<'login' | 'signup'>('login');
   const [uuidCode, setUuidCode] = useState('');
   const [password, setPassword] = useState('');
@@ -79,13 +70,6 @@ const Auth = () => {
     const result = await loginWithGoogle();
     if (result.error) {
       toast({ title: 'Google Login Failed', description: result.error, variant: 'destructive' });
-    }
-  };
-
-  const handleMicrosoftLogin = async () => {
-    const result = await loginWithMicrosoft();
-    if (result.error) {
-      toast({ title: 'Microsoft Login Failed', description: result.error, variant: 'destructive' });
     }
   };
 
@@ -173,13 +157,6 @@ const Auth = () => {
             >
               <GoogleIcon />
               Continue with Google
-            </button>
-            <button
-              onClick={handleMicrosoftLogin}
-              className="w-full flex items-center justify-center gap-3 bg-[#2F2F2F] text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 hover:bg-[#3F3F3F] hover:scale-[1.02]"
-            >
-              <MicrosoftIcon />
-              Continue with Microsoft
             </button>
           </div>
 
