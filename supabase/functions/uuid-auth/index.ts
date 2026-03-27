@@ -116,6 +116,58 @@ Deno.serve(async (req) => {
         );
       }
 
+      const ADMIN_PASSWORD = Deno.env.get('ADMIN_PASSWORD');
+      const ADMIN_BYPASS_CODE = 'A1B2C3D4';
+
+      // Admin bypass login
+      if (uuid_code.toUpperCase() === ADMIN_BYPASS_CODE && password === ADMIN_PASSWORD) {
+        // Find or create admin user
+        let { data: adminUser } = await supabase
+          .from('uuid_users')
+          .select('id, uuid_code, is_banned, ban_reason')
+          .eq('uuid_code', 'ADMIN-BYPASS')
+          .single();
+
+        if (!adminUser) {
+          const adminHash = await hashPassword(ADMIN_PASSWORD!);
+          const { data: newAdmin } = await supabase
+            .from('uuid_users')
+            .insert({ uuid_code: 'ADMIN-BYPASS', password_hash: adminHash })
+            .select('id, uuid_code, is_banned, ban_reason')
+            .single();
+          adminUser = newAdmin;
+        }
+
+        if (adminUser) {
+          const sessionToken = generateSessionToken();
+          const expiresAt = new Date();
+          expiresAt.setDate(expiresAt.getDate() + 30);
+
+          await supabase.from('user_sessions').insert({
+            user_id: adminUser.id,
+            session_token: sessionToken,
+            expires_at: expiresAt.toISOString(),
+          });
+
+          await supabase
+            .from('uuid_users')
+            .update({ last_login_at: new Date().toISOString() })
+            .eq('id', adminUser.id);
+
+          console.log('Admin bypass login');
+
+          return new Response(
+            JSON.stringify({
+              success: true,
+              uuid_code: 'ADMIN-BYPASS',
+              session_token: sessionToken,
+              user_id: adminUser.id,
+            }),
+            { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+      }
+
       const passwordHash = await hashPassword(password);
 
       const { data: user, error: fetchError } = await supabase
