@@ -3,7 +3,11 @@ import { useState, useEffect } from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import { Download, ArrowLeft, CheckCircle } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import type { SupabaseClient } from '@supabase/supabase-js';
 import { useToast } from '@/hooks/use-toast';
+
+// These legacy tables are not included in the currently generated database types.
+const legacySupabase = supabase as unknown as SupabaseClient<any>;
 
 const DownloadPage = () => {
   const location = useLocation();
@@ -35,7 +39,7 @@ const DownloadPage = () => {
       if (!os) return;
 
       try {
-        let query = supabase
+        let query = legacySupabase
           .from('download_links')
           .select('url')
           .eq('os', os);
@@ -60,7 +64,7 @@ const DownloadPage = () => {
           return;
         }
 
-        if (data) {
+        if (data?.url) {
           setDownloadUrl(data.url);
         }
       } catch (error) {

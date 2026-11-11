@@ -2,9 +2,13 @@ import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { ArrowLeft, Gift, CheckCircle, XCircle, Loader2, Copy, Check } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { toast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import AccountIcon from "@/components/AccountIcon";
+
+// These legacy tables and functions are not included in the currently generated database types.
+const legacySupabase = supabase as unknown as SupabaseClient<any>;
 
 const Redeem = () => {
   const navigate = useNavigate();
@@ -38,7 +42,7 @@ const Redeem = () => {
       }
       
       // Use the secure validate_code function
-      const { data: codeData, error: codeError } = await supabase
+      const { data: codeData, error: codeError } = await legacySupabase
         .rpc("validate_code", { code_input: cleanCode });
       
       if (codeError) {
@@ -65,7 +69,7 @@ const Redeem = () => {
       }
       
       // Record the redemption with user_id
-      const { error: redemptionError } = await supabase
+      const { error: redemptionError } = await legacySupabase
         .from("code_redemptions")
         .insert({
           code_id: validCode.id,
@@ -99,14 +103,14 @@ const Redeem = () => {
         });
       } else {
         // Get download URL based on app type
-        const { data: downloadData } = await supabase
+        const { data: downloadData } = await legacySupabase
           .from("download_links")
           .select("url")
           .eq("os", validCode.app_type === "MCD" ? "android" : "windows")
           .limit(1)
           .single();
         
-        setDownloadUrl(downloadData?.url || null);
+        setDownloadUrl(downloadData?.url ?? null);
         
         toast({
           title: "Code Redeemed!",
