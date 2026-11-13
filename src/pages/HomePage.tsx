@@ -1,20 +1,10 @@
 import { ArrowDown, ArrowRight, Laptop, Smartphone } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import voxelLandscape from '@/assets/mcedit-voxel-landscape.jpg';
 import { Button } from '@/components/ui/button';
 
 const HomePage = () => (
   <>
     <section className="home-hero" aria-labelledby="home-heading">
-      <img
-        className="home-hero-image"
-        src={voxelLandscape}
-        alt="A block-built cabin overlooking a green valley and mountains"
-        width={1536}
-        height={1024}
-        fetchPriority="high"
-      />
-      <div className="home-hero-shade" aria-hidden="true" />
       <div className="home-hero-inner">
         <p className="eyebrow"><span className="status-dot" /> Minecraft downloads made simple</p>
         <h1 id="home-heading">MC<span>EDIT</span></h1>
