@@ -1,0 +1,5 @@
+- [x] Rebuild the public site as MCEDIT Android APK and Windows PC download pages.
+- [x] Mark device architecture detection as experimental and support manual choice.
+- [x] Use plain white page backgrounds as requested; no generated imagery.
+- [ ] Validate download routes, instructions, and mobile/desktop layouts.
+- [ ] Add the real MCFWF1.0.zip when the user supplies it; the file is not present yet.
