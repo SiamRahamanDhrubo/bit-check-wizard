@@ -7,32 +7,32 @@
 @layer base {
   :root {
     --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --foreground: 150 14% 9%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 150 14% 9%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 150 14% 9%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 101 48% 34%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 145 20% 94%;
+    --secondary-foreground: 150 14% 13%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 145 18% 95%;
+    --muted-foreground: 150 8% 40%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 174 48% 32%;
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 150 12% 86%;
+    --input: 150 12% 86%;
+    --ring: 101 48% 34%;
 
     --radius: 0.5rem;
 
@@ -51,6 +51,14 @@
     --sidebar-border: 220 13% 91%;
 
     --sidebar-ring: 217.2 91.2% 59.8%;
+    --surface-raised: 145 18% 98%;
+    --surface-soft: 145 18% 96%;
+    --surface-glass: 0 0% 100% / 0.96;
+    --line-soft: 150 12% 86% / 0.8;
+    --green-soft: 101 48% 34% / 0.1;
+    --green-line: 101 48% 34% / 0.3;
+    --cyan-soft: 174 48% 32% / 0.09;
+    --shadow-deep: 0 18px 55px hsl(150 15% 10% / 0.1);
   }
 
   .dark {
