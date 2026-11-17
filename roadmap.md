@@ -3,3 +3,4 @@
 - [x] Use plain white page backgrounds as requested; no generated imagery.
 - [ ] Validate download routes, instructions, and mobile/desktop layouts.
 - [ ] Add the real MCFWF1.0.zip when the user supplies it; the file is not present yet.
+- [x] Set up private Android APK uploads, protected by an upload password and downloadable from the site.

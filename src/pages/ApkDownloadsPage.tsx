@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { InstructionsDialog } from '@/components/mcedit/SiteShell';
+import { supabase } from '@/integrations/supabase/client';
 import { detectDeviceArchitecture, type ArchitectureDetection } from '@/lib/deviceArchitecture';
 
 type ApkArchitecture = 'arm-v8a' | 'armeabi';
@@ -20,13 +21,47 @@ const apkDownloads: Record<ApkArchitecture, Record<MusicOption, string>> = {
   },
 };
 
+const apkFiles: Record<ApkArchitecture, Record<MusicOption, string>> = {
+  'arm-v8a': {
+    with: 'minecraft-arm-v8a-with-music.apk',
+    without: 'minecraft-arm-v8a-without-music.apk',
+  },
+  armeabi: {
+    with: 'minecraft-armeabi-with-music.apk',
+    without: 'minecraft-armeabi-without-music.apk',
+  },
+};
+
 const architectureOptions: { value: ApkArchitecture; label: string; detail: string }[] = [
   { value: 'arm-v8a', label: 'ARM-v8a', detail: 'ARM64 / ARMv8-A' },
   { value: 'armeabi', label: 'armeabi', detail: 'ARM32 / ARMv7-A' },
 ];
 
-function openDownload(url: string) {
-  window.open(url, '_blank', 'noopener,noreferrer');
+async function openDownload(filename: string, fallbackUrl: string) {
+  const downloadTab = window.open('about:blank', '_blank');
+
+  try {
+    const { data, error } = await supabase.functions.invoke('apk-files', {
+      body: { action: 'download', filename },
+    });
+    const target = !error && data?.available && typeof data.signedUrl === 'string'
+      ? data.signedUrl
+      : fallbackUrl;
+
+    if (downloadTab) {
+      downloadTab.opener = null;
+      downloadTab.location.replace(target);
+    } else {
+      window.location.assign(target);
+    }
+  } catch {
+    if (downloadTab) {
+      downloadTab.opener = null;
+      downloadTab.location.replace(fallbackUrl);
+    } else {
+      window.location.assign(fallbackUrl);
+    }
+  }
 }
 
 const ApkDownloadsPage = () => {
@@ -165,7 +200,7 @@ const ApkDownloadsPage = () => {
                     <span className="choice-kicker">{musicOption === 'with' ? 'SOUNDTRACK INCLUDED' : 'NO SOUNDTRACK'}</span>
                     <h3>{label}</h3>
                   </div>
-                  <Button className="apk-download-button" onClick={() => openDownload(apkDownloads[selectedArchitecture][musicOption])}>
+                  <Button className="apk-download-button" onClick={() => openDownload(apkFiles[selectedArchitecture][musicOption], apkDownloads[selectedArchitecture][musicOption])}>
                     <Download aria-hidden="true" /> Download
                   </Button>
                 </div>
