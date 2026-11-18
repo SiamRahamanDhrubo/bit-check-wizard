@@ -106,7 +106,7 @@ if [[ -z "$SIGNED_URL" ]]; then
 fi
 
 UPLOAD_STATUS="$(curl --silent --show-error --output "$TEMP_DIR/upload.json" --write-out '%{http_code}' \
-  -X PUT "$SIGNED_URL" \
+  -X POST "$SIGNED_URL" \
   -H "apikey: $PUBLISHABLE_KEY" \
   -H 'Content-Type: application/vnd.android.package-archive' \
   -H 'x-upsert: true' \

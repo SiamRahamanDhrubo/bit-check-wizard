@@ -3,6 +3,10 @@ import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
 
 const bucket = 'mcedit-apks';
 const maxFileSize = 500 * 1024 * 1024;
+const apkCorsHeaders = {
+  ...corsHeaders,
+  'Access-Control-Allow-Headers': `${corsHeaders['Access-Control-Allow-Headers']}, x-upload-password`,
+};
 const allowedFiles = new Set([
   'minecraft-arm-v8a-with-music.apk',
   'minecraft-arm-v8a-without-music.apk',
@@ -13,7 +17,7 @@ const allowedFiles = new Set([
 function reply(body: Record<string, unknown>, status = 200) {
   return new Response(JSON.stringify(body), {
     status,
-    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    headers: { ...apkCorsHeaders, 'Content-Type': 'application/json' },
   });
 }
 
@@ -31,7 +35,7 @@ async function secureEqual(left: string, right: string) {
 }
 
 Deno.serve(async (request) => {
-  if (request.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
+  if (request.method === 'OPTIONS') return new Response('ok', { headers: apkCorsHeaders });
   if (request.method !== 'POST') return reply({ error: 'Method not allowed' }, 405);
 
   const supabaseUrl = Deno.env.get('SUPABASE_URL');
