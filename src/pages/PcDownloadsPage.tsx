@@ -44,7 +44,7 @@ const PcDownloadsPage = () => (
       </div>
       <div className="pc-download-action">
         <Button asChild className="pc-download-button">
-  <a href="YOUR_DOWNLOAD_LINK_HERE" target="_blank" rel="noreferrer">
+  <a href="/MCFWF1.0.zip" download>
     <MonitorDown aria-hidden="true" /> Download MCFWF1.0.zip
   </a>
 </Button>
