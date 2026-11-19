@@ -43,11 +43,11 @@ const PcDownloadsPage = () => (
         <p className="page-lede">The requested package is MCFWF1.0.zip.</p>
       </div>
       <div className="pc-download-action">
-        <Button disabled className="pc-download-button">
-          <MonitorDown aria-hidden="true" /> MCFWF1.0.zip not uploaded
-        </Button>
-        <span className="unavailable-note">This download will be available when the ZIP file is added.</span>
-      </div>
+        <Button asChild className="pc-download-button">
+  <a href="YOUR_DOWNLOAD_LINK_HERE" target="_blank" rel="noreferrer">
+    <MonitorDown aria-hidden="true" /> Download MCFWF1.0.zip
+  </a>
+</Button>
     </section>
     <a className="store-link" href={microsoftStoreUrl} target="_blank" rel="noreferrer">
       Minecraft for Windows on Microsoft Store <span aria-hidden="true">↗</span>
