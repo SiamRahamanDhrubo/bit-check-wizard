@@ -44,10 +44,11 @@ const PcDownloadsPage = () => (
       </div>
       <div className="pc-download-action">
         <Button asChild className="pc-download-button">
-  <a href="/MCFWF1.0.zip" download>
-    <MonitorDown aria-hidden="true" /> Download MCFWF1.0.zip
-  </a>
-</Button>
+          <a href="/MCFWF1.0.zip" download>
+            <MonitorDown aria-hidden="true" /> Download MCFWF1.0.zip
+          </a>
+        </Button>
+      </div>
     </section>
     <a className="store-link" href={microsoftStoreUrl} target="_blank" rel="noreferrer">
       Minecraft for Windows on Microsoft Store <span aria-hidden="true">↗</span>
