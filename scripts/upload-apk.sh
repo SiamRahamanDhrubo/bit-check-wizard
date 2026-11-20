@@ -54,8 +54,8 @@ if [[ -z "$SUPABASE_URL" || -z "$PUBLISHABLE_KEY" ]]; then
 fi
 
 FILE_SIZE="$(wc -c < "$FILE_PATH" | tr -d '[:space:]')"
-if (( FILE_SIZE < 1 || FILE_SIZE > 524288000 )); then
-  echo "The APK must be between 1 byte and 500 MB." >&2
+if (( FILE_SIZE < 1 || FILE_SIZE > 1073741824 )); then
+  echo "The APK must be between 1 byte and 1 GB." >&2
   exit 2
 fi
 

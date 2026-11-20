@@ -2,7 +2,7 @@ import { createClient } from 'npm:@supabase/supabase-js@2';
 import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
 
 const bucket = 'mcedit-apks';
-const maxFileSize = 500 * 1024 * 1024;
+const maxFileSize = 1024 * 1024 * 1024;
 const apkCorsHeaders = {
   ...corsHeaders,
   'Access-Control-Allow-Headers': `${corsHeaders['Access-Control-Allow-Headers']}, x-upload-password`,
@@ -76,7 +76,7 @@ Deno.serve(async (request) => {
   }
 
   if (typeof body.size !== 'number' || !Number.isSafeInteger(body.size) || body.size < 1 || body.size > maxFileSize) {
-    return reply({ error: 'APK must be between 1 byte and 500 MB' }, 400);
+    return reply({ error: 'APK must be between 1 byte and 1 GB' }, 400);
   }
 
   const { data, error } = await storage.createSignedUploadUrl(body.filename, { upsert: true });
